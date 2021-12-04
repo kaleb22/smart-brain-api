@@ -24,4 +24,5 @@ You can grab Clarifai API key [here](https://www.clarifai.com/)
 2. port: 5431
 3. username: postgres
 4. password: Password
+5. maintance db: smart-brain-docker
 
