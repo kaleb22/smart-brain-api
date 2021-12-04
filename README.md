@@ -16,3 +16,12 @@ You can grab Clarifai API key [here](https://www.clarifai.com/)
 1. first build the container -> docker build -t MY_CONTAINER_NAME .
 2. run it -> docker run -it -p 3000:3000 -e REACT_APP_MY_API_KEY="API_KEY_VALUE" MY_CONTAINER_NAME
 
+# Docker compose file added
+
+* to connect with pgAdmin port  5431 was mapped to 5432 on docker container
+
+1. hostName/address: localhost
+2. port: 5431
+3. username: postgres
+4. password: Password
+
