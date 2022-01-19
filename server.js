@@ -15,10 +15,10 @@ const db = knex({
   // connect to your own database here:
   client: 'pg',
   connection: {
-    host : process.env.POSTGRES_HOST,
-    user : process.env.POSTGRES_USER,
-    password : process.env.POSTGRES_PASSWORD,
-    database : process.env.DB
+    host : process.env.REACT_APP_POSTGRES_HOST,
+    user : process.env.REACT_APP_POSTGRES_USER,
+    password : process.env.REACT_APP_POSTGRES_PASSWORD,
+    database : process.env.REACT_APP_DB
   }
 });
 

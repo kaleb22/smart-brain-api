@@ -10,8 +10,8 @@ services:
     environment:
       POSTGRES_HOST: postgres
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 957486
-      POSTGRES_DB: smart-brain-docker
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: smart-brain-db
     ports:
       - "3000:3000"
     volumes:
@@ -20,11 +20,11 @@ services:
   # Postgres
   postgres:
     container_name: db-postgres
-    image: postgres
+    build: ./postgres
     ports:
       - "5431:5432"
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Password
-      POSTGRES_DB: smart-brain-docker
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: smart-brain-db
       POSTGRES_HOST: postgres
