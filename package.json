@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "script.js",
   "scripts": {
-    "start": "nodemon -r dotenv/config server.js"
+    "start": "nodemon -L -r dotenv/config server.js"
   },
   "keywords": [],
   "author": "",
