@@ -12,10 +12,21 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_DB: smart-brain-db
+      REDIS_URI: redis://redis:6379
+    links:
+      - redis
     ports:
       - "3000:3000"
     volumes:
       - ./:/usr/src/smart-brain-api # maps the files from host to the container
+
+  #redis
+  redis:
+    image: redis
+    container_name: redis-container
+    command: redis-server
+    ports:
+      - "6379:6379"
 
   # Postgres
   postgres:
