@@ -1,26 +1,68 @@
-const handleSignin = (db, bcrypt) => (req, res) => {
+const { response } = require("express");
+const jwt = require('jsonwebtoken');
+
+const handleSignin = (db, bcrypt, req) => {
   const { email, password } = req.body;
+  
   if (!email || !password) {
-    return res.status(400).json('incorrect form submission');
+    return Promise.reject('incorrect form submission');
   }
-  db.select('email', 'hash').from('login')
+  
+  return db.select('email', 'hash').from('login')
     .where('email', '=', email)
     .then(data => {
       const isValid = bcrypt.compareSync(password, data[0].hash);
       if (isValid) {
         return db.select('*').from('users')
           .where('email', '=', email)
-          .then(user => {
-            res.json(user[0])
-          })
-          .catch(err => res.status(400).json('unable to get user'))
+          .then( user => user[0] )
+          .catch(err => Promise.reject('unable to get user'))
       } else {
-        res.status(400).json('wrong credentials')
+        Promise.reject('wrong credentials')
       }
     })
-    .catch(err => res.status(400).json('wrong credentials'))
+    .catch(err => Promise.reject('wrong credentials'))
+}
+
+const getAuthTokenId = () => {
+  console.log('auth ok!!');
+}
+
+const signToken = (email) => {
+  const jwtPayload = { email };
+  return jwt.sign( jwtPayload, 'JWT_SECRET', {expiresIn: '2 days'});
+}
+
+const createSessions = (user) => {
+
+  const { email, id } = user;
+  const token = signToken(email);
+  let response =  { success: 'true', userId: id, token };
+  console.log('create sessions response => ', response)
+  return response;
+}
+
+/* dependency injection --
+*  signInAuthentication will be called first passing db and bcrypt
+*  and then the post function will be called passing req and res
+*  app.post('/signin', signin.singInAuthentication(db, bcrypt))
+*/
+const singInAuthentication = (db, bcrypt) => (req, res) => {
+
+  const { authorization } = req.headers;
+  return authorization ? getAuthTokenId() : 
+    handleSignin(db, bcrypt, req)
+      .then( data => {
+        return data.id && data.email ?  createSessions(data) : Promise.reject(data)
+      })
+      .then(session => {
+        console.log('session =>', session)
+         res.json(session)
+      })
+      .catch( error => res.status(400).json(error));
 }
 
 module.exports = {
-  handleSignin: handleSignin
+  handleSignin: handleSignin,
+  singInAuthentication: singInAuthentication
 }
