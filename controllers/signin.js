@@ -27,8 +27,16 @@ const handleSignin = (db, bcrypt, req) => {
     .catch(err => Promise.reject('wrong credentials'))
 }
 
-const getAuthTokenId = () => {
-  console.log('auth ok!!');
+const getAuthTokenId = (req, res) => {
+  const { authorization } = req.headers;
+
+   redisClient.get(authorization, (err, reply) => {
+     if( err || !reply ) {
+       return res.status(401).json('unauthorized');
+     } 
+
+     return res.json({ id: reply });
+   })
 }
 
 const signToken = (email) => {
@@ -36,13 +44,18 @@ const signToken = (email) => {
   return jwt.sign( jwtPayload, 'JWT_SECRET', {expiresIn: '2 days'});
 }
 
-const createSessions = (user) => {
+const setToken = (token, id) => {
+  return Promise.resolve(redisClient.set(token, id))
+}
 
+const createSessions = (user) => {
   const { email, id } = user;
   const token = signToken(email);
-  let response =  { success: 'true', userId: id, token };
-  console.log('create sessions response => ', response)
-  return response;
+  return setToken(token, id)
+    .then(() => { 
+      return { success: 'true', userId: id, token }
+    })
+    .catch(console.log());
 }
 
 /* dependency injection --
@@ -53,7 +66,7 @@ const createSessions = (user) => {
 const singInAuthentication = (db, bcrypt) => (req, res) => {
 
   const { authorization } = req.headers;
-  return authorization ? getAuthTokenId() : 
+  return authorization ? getAuthTokenId(req, res) : 
     handleSignin(db, bcrypt, req)
       .then( data => {
         return data.id && data.email ?  createSessions(data) : Promise.reject(data)
