@@ -79,6 +79,6 @@ const singInAuthentication = (db, bcrypt) => (req, res) => {
 }
 
 module.exports = {
-  handleSignin: handleSignin,
-  singInAuthentication: singInAuthentication
+  singInAuthentication: singInAuthentication,
+  redisClient: redisClient
 }
